@@ -14,13 +14,13 @@
         min-height: 100vh;
     }
 
-    /* Wrapper, który wyśrodkuje zawartość i odsunię ją od navbaru */
+
     .content-wrapper {
         flex: 1;
         display: flex;
         justify-content: center;
         align-items: center;
-        padding-top: 80px; /* Dostosuj do wysokości navbaru */
+        padding-top: 80px;
         padding-bottom: 40px;
         box-sizing: border-box;
         position: relative;
@@ -101,6 +101,25 @@
         z-index: 1;
         mix-blend-mode: screen;
     }
+    .table tr:last-child td:first-child {
+    border-bottom-left-radius: 16px;
+}
+
+.table tr:last-child td:last-child {
+    border-bottom-right-radius: 16px;
+}
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table {
+    min-width: 600px; /* wymusza przewijanie na wąskich ekranach */
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+    word-break: break-word;
+}
 </style>
 
 <canvas id="background-canvas"></canvas>
@@ -113,6 +132,56 @@
             <a href="{{ route('pit-calculator') }}" class="btn btn-primary btn-lg mt-3">
                 Oblicz podatek
             </a>
+                    <div class="mt-5">
+    <h3 class="text-warning text-center mb-4" style="text-shadow: 0 0 8px rgba(255, 221, 89, 0.6);">
+        Ostatnie anonimowe kalkulacje
+    </h3>
+
+    @if($calculations->isEmpty())
+        <div class="alert alert-info text-center">Brak danych do wyświetlenia.</div>
+    @else
+        <div class="table-wrapper" style="
+            border-radius: 16px;
+            overflow: hidden;
+            background: rgba(38, 55, 112, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(37, 117, 252, 0.4);
+            border: 1px solid rgba(255, 221, 89, 0.3);
+        ">
+            <table class="table table-responsive align-middle text-center mb-0">
+                <thead style="background-color: rgba(38, 55, 112, 0.7); color: #ffdd59;">
+                    <tr>
+                        <th>Data</th>
+                        <th>Dochód</th>
+                        <th>Typ podatku</th>
+                        <th>Kwota podatku</th>
+                        <th>Użytkownik</th>
+                    </tr>
+                </thead>
+                <tbody style="color: #e0e7ff;">
+                    @foreach($calculations as $calc)
+                        <tr style="transition: background-color 0.3s;">
+                            <td>{{ $calc->created_at->format('Y-m-d H:i') }}</td>
+                            <td>{{ number_format($calc->income, 2, ',', ' ') }} zł</td>
+                            <td>
+                                @php
+                                    $types = ['scale' => 'Skala', 'flat' => 'Liniowy', 'ryczałt' => 'Ryczałt'];
+                                @endphp
+                                {{ $types[$calc->tax_type] ?? '—' }}
+                            </td>
+                            <td>{{ number_format($calc->tax_amount, 2, ',', ' ') }} zł</td>
+                            <td><span class="text-muted">Poufne 🔒</span></td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
+</div>
+
+
+
         </div>
 
         <div class="row text-center mb-5">

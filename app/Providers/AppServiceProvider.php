@@ -21,17 +21,5 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
-    public function map()
-{
-    $this->mapWebRoutes();
-    $this->mapApiRoutes();
-}
-
-protected function mapWebRoutes()
-{
-    Route::middleware('web')  // <-- sprawdź, czy ta linia istnieje
-        ->namespace($this->namespace)
-        ->group(base_path('routes/web.php'));
-}
 
 }

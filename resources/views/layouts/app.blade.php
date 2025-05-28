@@ -145,6 +145,9 @@ nav.navbar .nav-link.active {
                                     <li>
                                         <a class="dropdown-item" href="{{ route('admin.dashboard') }}">Dashboard</a>
                                     </li>
+                                    <li>
+        <a class="dropdown-item" href="{{ route('admin.users.index') }}">Użytkownicy</a>
+    </li>
                                 @endif
                                 <li>
                                     <hr class="dropdown-divider">

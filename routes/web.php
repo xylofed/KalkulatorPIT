@@ -14,17 +14,12 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TaxHistoryController;
 
-// Strona główna
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Autoryzacja
 Auth::routes();
-
-// Trasy dla gości (publiczne)
-Route::resource('income-sources', IncomeSourceController::class)->only(['index', 'show']);
 
 // Trasy dostępne tylko dla zalogowanych użytkowników
 Route::middleware(['auth'])->group(function () {
@@ -51,12 +46,32 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/account/update-email', [AccountSettingsController::class, 'updateEmail'])->name('account.updateEmail');
     Route::put('/account/update-password', [AccountSettingsController::class, 'updatePassword'])->name('account.updatePassword');
 
-    // Pełny CRUD dla IncomeSource (oprócz index/show, które są publiczne)
-    Route::resource('income-sources', IncomeSourceController::class)->except(['index', 'show']);
 
     // Trasy dostępne tylko dla administratorów
     Route::middleware([AdminMiddleware::class])->group(function () {
+
+        Route::delete('/admin/dashboard/clear-history', [TaxCalculationController::class, 'destroyAll'])->name('dashboard.clear-history');
+
+        Route::delete('/admin/users/destroy-all', [UserController::class, 'destroyAll'])->name('admin.users.destroyAll');
+
+        Route::get('/admin/users', [App\Http\Controllers\UserController::class, 'index'])->name('admin.users.index');
+
+        Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+        Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+        Route::put('/users/{id}', [UserController::class, 'update'])->name('admin.users.update');
+        Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+
+
+
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+
+        Route::resource('tax-history', TaxHistoryController::class)->only(['edit', 'update']);
+
+        Route::resource('tax-history', TaxHistoryController::class)->only(['index', 'edit', 'update']);
+
+
         Route::resource('users', UserController::class)->only(['edit', 'update']);
+
         // Dashboard admina
         Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
@@ -64,7 +79,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         // Czyszczenie całej historii zmian (panel admina)
-        Route::delete('/tax-history/clear', [DashboardController::class, 'clearAll'])->name('dashboard.clear-history');
+        // Route::delete('/tax-history/clear', [DashboardController::class, 'clearAll'])->name('dashboard.clear-history');
     });
 });
 
@@ -80,7 +95,4 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/pit-calculator/demo', [TaxCalculationController::class, 'showDemoCalculator'])->name('pit-calculator.demo');
 Route::post('/pit-calculator/demo', [TaxCalculationController::class, 'calculateDemo'])->name('pit-calculator.demo.calculate');
 
-
-
-
-
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {});

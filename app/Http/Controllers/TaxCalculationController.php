@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\TaxCalculation;
 use App\Models\TaxHistory;
+use Illuminate\Support\Facades\DB;
 
 class TaxCalculationController extends Controller
 {
@@ -34,13 +35,21 @@ public function showTaxHistory()
     }
 
     public function edit($id)
-    {
-        $taxCalculation = TaxCalculation::findOrFail($id);
-        return view('tax-calculations.edit', compact('taxCalculation'));
-    }
-
-    public function update(Request $request, $id)
 {
+    $taxCalculation = TaxCalculation::where('id', $id)
+    ->where('user_id', auth()->id())
+    ->firstOrFail();
+
+    return view('tax-calculations.edit', compact('taxCalculation'));
+}
+
+
+public function update(Request $request, $id)
+{
+    $taxCalculation = TaxCalculation::where('id', $id)
+    ->where('user_id', auth()->id())
+    ->firstOrFail();
+
     $request->validate([
         'income' => 'required|numeric|min:0',
         'expenses' => 'required|numeric|min:0',
@@ -52,14 +61,10 @@ public function showTaxHistory()
         'is_married' => 'nullable|boolean',
     ]);
 
-    $taxCalculation = TaxCalculation::findOrFail($id);
-
-    // Zapisz stare wartości (bez timestampów)
     $oldValues = collect($taxCalculation->getOriginal())
         ->except(['created_at', 'updated_at'])
         ->toArray();
 
-    // Obliczenia
     $taxableIncome = max(0, $request->income - $request->expenses - $request->deductions - ($request->social_insurance ?? 0));
     $taxAmount = $this->calculateTax($taxableIncome, $request->tax_type);
     $taxAmount = max(0, $taxAmount - self::TAX_REDUCTION);
@@ -71,7 +76,6 @@ public function showTaxHistory()
     $taxAmount -= ($request->children ?? 0) * self::CHILD_ALLOWANCE;
     $taxAmount = max(0, $taxAmount);
 
-    // Nowe wartości do zapisania
     $newValues = [
         'income' => $request->income,
         'expenses' => $request->expenses,
@@ -85,7 +89,7 @@ public function showTaxHistory()
         'tax_amount' => $taxAmount,
     ];
 
-    // Zapis historii zmian
+    // Do historii zapisujemy kto aktualizuje - to będzie admin (Auth::id())
     TaxHistory::create([
         'tax_calculation_id' => $taxCalculation->id,
         'user_id' => Auth::id(),
@@ -94,12 +98,32 @@ public function showTaxHistory()
         'new_values' => $newValues,
     ]);
 
-    // Aktualizacja kalkulacji
     $taxCalculation->update($newValues);
 
-    return redirect()->route('tax-calculations.index')
-        ->with('status', 'Kalkulacja zaktualizowana');
+    if (auth()->user()->role === 'admin') {
+    return redirect()->route('admin.dashboard')->with('status', 'Kalkulacja została zaktualizowana.');
+} else {
+    return redirect()->route('tax-calculations.index')->with('status', 'Kalkulacja została zaktualizowana.');
 }
+
+
+}
+
+
+
+public function destroyAll()
+{
+    DB::statement('SET FOREIGN_KEY_CHECKS=0');
+
+    \App\Models\TaxCalculation::query()->delete();
+    \App\Models\TaxHistory::query()->delete();
+
+    DB::statement('SET FOREIGN_KEY_CHECKS=1');
+
+    return redirect('/admin/dashboard')->with('status', 'Wszystkie kalkulacje i historia zostały trwale usunięte.');
+}
+
+
 
 
     public function showCalculator()
@@ -231,11 +255,6 @@ public function showTaxHistory()
     return view('tax-calculator-demo');
 }
 
-public function edit($id)
-{
-    $history = TaxHistory::findOrFail($id);
-    return view('tax-history.edit', compact('history'));
-}
 
 
 public function calculateDemo(Request $request)

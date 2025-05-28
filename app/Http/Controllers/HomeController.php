@@ -3,26 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\TaxCalculation;
 
 class HomeController extends Controller
 {
     /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
-    /**
-     * Show the application dashboard.
+     * Show the public homepage with last tax calculations.
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index()
     {
-        return view('home');
+        $calculations = TaxCalculation::whereNull('user_id')
+            ->where('is_public', true)
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('welcome', compact('calculations'));
     }
 }

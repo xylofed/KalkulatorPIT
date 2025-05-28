@@ -244,118 +244,109 @@ select.form-control:focus {
 
 <canvas id="background-canvas"></canvas>
     <div class="container">
-        <h1>Edytuj kalkulację PIT</h1>
+    <h1>Edytuj kalkulację PIT</h1>
 
-        <!-- Komunikaty o sukcesie lub błędach -->
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
+    @if (session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
 
-        @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
+    @if (session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
 
-        <!-- Formularz edycji kalkulacji -->
-        <form method="POST" action="{{ route('tax-calculations.update', $taxCalculation->id) }}">
-            @csrf
-            @method('PUT')
+    <form method="POST" action="{{ route('tax-calculations.update', $taxCalculation->id) }}">
+        @csrf
+        @method('PUT')
 
-            <!-- Dochód -->
-            <div class="form-group">
-                <label for="income">Dochód</label>
-                <input type="number" class="form-control @error('income') is-invalid @enderror" id="income" name="income"
-                    value="{{ old('income', $taxCalculation->income) }}" required>
-                @error('income')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
+        <!-- Dochód -->
+        <div class="form-group">
+            <label for="income">Dochód</label>
+            <input type="number" step="any" class="form-control @error('income') is-invalid @enderror" id="income" name="income"
+                value="{{ old('income', $taxCalculation->income) }}" required>
+            @error('income')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
 
-            <!-- Koszty uzyskania przychodu -->
-            <div class="form-group">
-                <label for="expenses">Koszty uzyskania przychodu</label>
-                <input type="number" class="form-control @error('expenses') is-invalid @enderror" id="expenses"
-                    name="expenses" value="{{ old('expenses', $taxCalculation->expenses) }}" required>
-                @error('expenses')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
+        <!-- Koszty uzyskania przychodu -->
+        <div class="form-group">
+            <label for="expenses">Koszty uzyskania przychodu</label>
+            <input type="number" step="any" class="form-control @error('expenses') is-invalid @enderror" id="expenses"
+                name="expenses" value="{{ old('expenses', $taxCalculation->expenses) }}" required>
+            @error('expenses')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
 
-            <!-- Ulgi i odliczenia -->
-            <div class="form-group">
-                <label for="deductions">Ulgi i odliczenia</label>
-                <input type="number" class="form-control @error('deductions') is-invalid @enderror" id="deductions"
-                    name="deductions" value="{{ old('deductions', $taxCalculation->deductions) }}" required>
-                @error('deductions')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
+        <!-- Ulgi i odliczenia -->
+        <div class="form-group">
+            <label for="deductions">Ulgi i odliczenia</label>
+            <input type="number" step="any" class="form-control @error('deductions') is-invalid @enderror" id="deductions"
+                name="deductions" value="{{ old('deductions', $taxCalculation->deductions) }}" required>
+            @error('deductions')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
 
-            <!-- Typ opodatkowania -->
-            <div class="form-group">
-                <label for="tax_type">Typ opodatkowania</label>
-                <select class="form-control @error('tax_type') is-invalid @enderror" id="tax_type" name="tax_type"
-                    required>
-                    <option value="scale" {{ old('tax_type', $taxCalculation->tax_type) == 'scale' ? 'selected' : '' }}>
-                        Skala podatkowa (17%/32%)</option>
-                    <option value="flat" {{ old('tax_type', $taxCalculation->tax_type) == 'flat' ? 'selected' : '' }}>
-                        Podatek liniowy (19%)</option>
-                    <option value="ryczałt"
-                        {{ old('tax_type', $taxCalculation->tax_type) == 'ryczałt' ? 'selected' : '' }}>Ryczałt (8.5%)
-                    </option>
-                </select>
-                @error('tax_type')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
+        <!-- Typ opodatkowania -->
+        <div class="form-group">
+            <label for="tax_type">Typ opodatkowania</label>
+            <select class="form-control @error('tax_type') is-invalid @enderror" id="tax_type" name="tax_type" required>
+                <option value="scale" {{ old('tax_type', $taxCalculation->tax_type) == 'scale' ? 'selected' : '' }}>
+                    Skala podatkowa (17%/32%)</option>
+                <option value="flat" {{ old('tax_type', $taxCalculation->tax_type) == 'flat' ? 'selected' : '' }}>
+                    Podatek liniowy (19%)</option>
+                <option value="ryczałt" {{ old('tax_type', $taxCalculation->tax_type) == 'ryczałt' ? 'selected' : '' }}>
+                    Ryczałt (8.5%)</option>
+            </select>
+            @error('tax_type')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
 
-            <!-- Liczba dzieci -->
-            <div class="form-group">
-                <label for="children">Liczba dzieci</label>
-                <input type="number" class="form-control @error('children') is-invalid @enderror" id="children"
-                    name="children" value="{{ old('children', $taxCalculation->children) }}">
-                @error('children')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
+        <!-- Liczba dzieci -->
+        <div class="form-group">
+            <label for="children">Liczba dzieci</label>
+            <input type="number" step="1" min="0" class="form-control @error('children') is-invalid @enderror" id="children"
+                name="children" value="{{ old('children', $taxCalculation->children) }}">
+            @error('children')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
 
-            <!-- Składki społeczne -->
-            <div class="form-group">
-                <label for="social_insurance">Składki społeczne</label>
-                <input type="number" class="form-control @error('social_insurance') is-invalid @enderror"
-                    id="social_insurance" name="social_insurance"
-                    value="{{ old('social_insurance', $taxCalculation->social_insurance) }}">
-                @error('social_insurance')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
+        <!-- Składki społeczne -->
+        <div class="form-group">
+            <label for="social_insurance">Składki społeczne</label>
+            <input type="number" step="any" class="form-control @error('social_insurance') is-invalid @enderror"
+                id="social_insurance" name="social_insurance"
+                value="{{ old('social_insurance', $taxCalculation->social_insurance) }}">
+            @error('social_insurance')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
 
-            <!-- Składki zdrowotne -->
-            <div class="form-group">
-                <label for="health_insurance">Składki zdrowotne</label>
-                <input type="number" class="form-control @error('health_insurance') is-invalid @enderror"
-                    id="health_insurance" name="health_insurance"
-                    value="{{ old('health_insurance', $taxCalculation->health_insurance) }}">
-                @error('health_insurance')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
+        <!-- Składki zdrowotne -->
+        <div class="form-group">
+            <label for="health_insurance">Składki zdrowotne</label>
+            <input type="number" step="any" class="form-control @error('health_insurance') is-invalid @enderror"
+                id="health_insurance" name="health_insurance"
+                value="{{ old('health_insurance', $taxCalculation->health_insurance) }}">
+            @error('health_insurance')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
 
-            <!-- Wspólne rozliczenie małżeńskie -->
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="is_married" name="is_married" value="1"
-                    {{ old('is_married', $taxCalculation->is_married) ? 'checked' : '' }}>
-                <label class="form-check-label" for="is_married">Wspólne rozliczenie małżeńskie</label>
-            </div>
+        <!-- Wspólne rozliczenie małżeńskie -->
+        <div class="form-check mt-3">
+            <input type="checkbox" class="form-check-input" id="is_married" name="is_married" value="1"
+                {{ old('is_married', $taxCalculation->is_married) ? 'checked' : '' }}>
+            <label class="form-check-label" for="is_married">Wspólne rozliczenie małżeńskie</label>
+        </div>
 
+        <button type="submit" class="btn btn-primary mt-4">Zaktualizuj kalkulację</button>
+    </form>
+</div>
 
-            <!-- Przycisk do zaktualizowania kalkulacji -->
-            <button type="submit" class="btn btn-primary mt-4">Zaktualizuj kalkulację</button>
-        </form>
-    </div>
     <script>
 (() => {
     const canvas = document.getElementById('background-canvas');

@@ -15,11 +15,11 @@ class UserSeeder extends Seeder
     {
         // Sprawdzenie, czy użytkownik o emailu 'admin@example.com' już istnieje
         if (!User::where('email', 'admin@example.com')->exists()) {
-            // Tworzenie administratora z hasłem '12345678'
+
             User::create([
                 'name' => 'Administrator',
                 'email' => 'admin@example.com',
-                'password' => Hash::make('12345678'), // hasło: 12345678
+                'password' => Hash::make('admin'),
                 'role' => 'admin',
             ]);
             echo "Administrator został dodany.\n";
@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
             User::create([
                 'name' => 'Test User',
                 'email' => 'user@example.com',
-                'password' => Hash::make('password'), // hasło: password
+                'password' => Hash::make('password'),
                 'role' => 'user',
             ]);
             echo "Użytkownik testowy został dodany.\n";
