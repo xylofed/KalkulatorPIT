@@ -54,18 +54,10 @@ Route::middleware(['auth'])->group(function () {
 
         Route::delete('/admin/users/destroy-all', [UserController::class, 'destroyAll'])->name('admin.users.destroyAll');
 
-        Route::get('/admin/users', [App\Http\Controllers\UserController::class, 'index'])->name('admin.users.index');
-
         Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
         Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
         Route::put('/users/{id}', [UserController::class, 'update'])->name('admin.users.update');
         Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
-
-
-
-        Route::get('/users', [UserController::class, 'index'])->name('users.index');
-
-        Route::resource('tax-history', TaxHistoryController::class)->only(['edit', 'update']);
 
         Route::resource('tax-history', TaxHistoryController::class)->only(['index', 'edit', 'update']);
 
@@ -78,9 +70,16 @@ Route::middleware(['auth'])->group(function () {
         // Panel admina (np. wykresy)
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        // Czyszczenie całej historii zmian (panel admina)
-        // Route::delete('/tax-history/clear', [DashboardController::class, 'clearAll'])->name('dashboard.clear-history');
     });
+});
+
+// Trasy użytkownika
+Route::middleware(['auth'])->prefix('tax-calculations')->name('tax-calculations.')->group(function () {
+    Route::get('/', [TaxCalculationController::class, 'index'])->name('index');
+    Route::post('/', [TaxCalculationController::class, 'store'])->name('store');
+    Route::get('{id}/edit', [TaxCalculationController::class, 'edit'])->name('edit');
+    Route::put('{id}', [TaxCalculationController::class, 'update'])->name('update');
+    Route::delete('{id}', [TaxCalculationController::class, 'destroy'])->name('destroy');
 });
 
 // Logowanie i wylogowanie

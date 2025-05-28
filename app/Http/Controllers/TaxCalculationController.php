@@ -46,9 +46,17 @@ public function showTaxHistory()
 
 public function update(Request $request, $id)
 {
+
+    $calculation = TaxCalculation::findOrFail($id);
+
+    if (auth()->user()->role === 'admin') {
+    $taxCalculation = TaxCalculation::findOrFail($id);
+} else {
     $taxCalculation = TaxCalculation::where('id', $id)
-    ->where('user_id', auth()->id())
-    ->firstOrFail();
+        ->where('user_id', auth()->id())
+        ->firstOrFail();
+}
+
 
     $request->validate([
         'income' => 'required|numeric|min:0',
@@ -101,10 +109,14 @@ public function update(Request $request, $id)
     $taxCalculation->update($newValues);
 
     if (auth()->user()->role === 'admin') {
-    return redirect()->route('admin.dashboard')->with('status', 'Kalkulacja została zaktualizowana.');
-} else {
-    return redirect()->route('tax-calculations.index')->with('status', 'Kalkulacja została zaktualizowana.');
+    return redirect()->route('tax-history.edit', $id)->with('success', 'Kalkulacja została zaktualizowana przez administratora.');
 }
+
+
+    return redirect()->route('tax-calculations.edit', $id)->with('success', 'Kalkulacja została zaktualizowana.');
+
+
+
 
 
 }
