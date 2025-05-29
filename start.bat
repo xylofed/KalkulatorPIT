@@ -3,6 +3,11 @@ setlocal
 
 echo === STARTUJEMY PROJEKT KALKULATORA PIT ===
 
+:: 0. Tworzenie bazy danych (PHP)
+echo Tworzenie bazy danych pit_calculator...
+php create-db.php
+
+
 :: 1. Plik .env
 IF NOT EXIST ".env" (
     echo Tworzenie pliku .env...
