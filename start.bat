@@ -41,4 +41,3 @@ start http://localhost:8000
 echo Uruchamianie serwera Laravel...
 start cmd /k "php artisan serve"
 
-pause
