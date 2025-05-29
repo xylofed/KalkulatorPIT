@@ -15,6 +15,7 @@ IF NOT EXIST ".env" (
 IF NOT EXIST "vendor" (
     echo Instalacja zależności Composer...
     composer install
+	pause
 ELSE (
     echo Katalog vendor już istnieje – pomijam composer install.
 )
