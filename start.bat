@@ -1,49 +1,35 @@
 @echo off
-chcp 65001 >nul
-cd /d %~dp0
-SETLOCAL
+setlocal
 
-:: Konfiguracja bazy danych
-SET DB_USER=root
-SET DB_NAME=pit_calculator
+echo === STARTUJEMY PROJEKT KALKULATORA PIT ===
 
-echo [1/8] Tworzenie bazy danych (jesli jeszcze nie istnieje)
-"C:\xampp\mysql\bin\mysql.exe" -u %DB_USER% -e "CREATE DATABASE IF NOT EXISTS %DB_NAME% CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-IF %ERRORLEVEL% NEQ 0 (
-    echo Błąd: Nie mozna utworzyc bazy danych.
-    pause
-    EXIT /B
+:: 1. Kopiowanie pliku .env jeśli nie istnieje
+IF NOT EXIST ".env" (
+    echo Tworzenie pliku .env...
+    copy .env.example .env
+) ELSE (
+    echo Plik .env już istnieje.
 )
 
-echo [2/8] Instalacja zaleznosci Node.js i PHP...
-call npm install || goto error
-call composer install || goto error
+:: 2. Instalacja zależności Composer (jeśli jeszcze nie ma vendor)
+IF NOT EXIST "vendor" (
+    echo Instalacja zależności Composer...
+    composer install
+)
 
-echo [3/8] Migracje i seedy...
-call php artisan migrate:fresh --seed || goto error
+:: 3. Generowanie klucza aplikacji
+echo Generowanie klucza aplikacji...
+php artisan key:generate
 
-echo [4/8] Tworzenie linku storage...
-call php artisan storage:link || goto error
+:: 4. Migracje + seed
+echo Uruchamianie migracji i seederów...
+php artisan migrate:fresh --seed
 
-echo [5/8] Uruchamianie frontend (npm run dev)...
-start "Vite Dev" cmd /k npm run dev
+:: 5. Otwieranie aplikacji w przeglądarce
+start http://localhost:8000
 
-echo [6/8] Uruchamianie queue:work...
-start "Queue Worker" cmd /k php artisan queue:work
+:: 6. Uruchamianie lokalnego serwera
+echo Uruchamianie serwera Laravel...
+php artisan serve
 
-echo [7/8] Uruchamianie schedule:work...
-start "Schedule Worker" cmd /k php artisan schedule:work
-
-echo [8/8] Uruchamianie serwera Laravel...
-start "Laravel Server" cmd /k php artisan serve
-
-echo Gotowe!
-goto end
-
-:error
-echo Wystapil blad podczas uruchamiania.
-pause
-exit /B
-
-:end
 pause
