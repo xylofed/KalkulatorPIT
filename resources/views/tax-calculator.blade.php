@@ -235,67 +235,141 @@ select.form-control:focus {
 <canvas id="background-canvas"></canvas>
 
     <div class="container">
-        <h1>Kalkulator PIT</h1>
+    <h1>Kalkulator PIT</h1>
 
-        @if (session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
+    @if (session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
 
-        <form method="POST" action="{{ route('pit-calculator.calculate') }}">
-            @csrf
+    <form method="POST" action="{{ route('pit-calculator.calculate') }}">
+        @csrf
 
-            <div class="form-group">
-                <label for="income">Dochód</label>
-                <input type="number" class="form-control" id="income" name="income" value="{{ old('income') }}" required>
-            </div>
+        <div class="form-group">
+            <label for="income">Dochód</label>
+            <input
+                type="number"
+                class="form-control @error('income') is-invalid @enderror"
+                id="income"
+                name="income"
+                value="{{ old('income') }}"
+                min="0"
+                required
+            >
+            @error('income')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
 
-            <div class="form-group">
-                <label for="expenses">Koszty uzyskania przychodu</label>
-                <input type="number" class="form-control" id="expenses" name="expenses" value="{{ old('expenses') }}"
-                    required>
-            </div>
+        <div class="form-group">
+            <label for="expenses">Koszty uzyskania przychodu</label>
+            <input
+                type="number"
+                class="form-control @error('expenses') is-invalid @enderror"
+                id="expenses"
+                name="expenses"
+                value="{{ old('expenses') }}"
+                min="0"
+                required
+            >
+            @error('expenses')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
 
-            <div class="form-group">
-                <label for="deductions">Ulgi i odliczenia</label>
-                <input type="number" class="form-control" id="deductions" name="deductions" value="{{ old('deductions') }}"
-                    required>
-            </div>
+        <div class="form-group">
+            <label for="deductions">Ulgi i odliczenia</label>
+            <input
+                type="number"
+                class="form-control @error('deductions') is-invalid @enderror"
+                id="deductions"
+                name="deductions"
+                value="{{ old('deductions') }}"
+                min="0"
+                required
+            >
+            @error('deductions')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
 
-            <div class="form-group">
-                <label for="tax_type">Typ opodatkowania</label>
-                <select class="form-control" id="tax_type" name="tax_type" required>
-                    <option value="scale" {{ old('tax_type') == 'scale' ? 'selected' : '' }}>Skala podatkowa (17%/32%)
-                    </option>
-                    <option value="flat" {{ old('tax_type') == 'flat' ? 'selected' : '' }}>Podatek liniowy (19%)</option>
-                    <option value="ryczałt" {{ old('tax_type') == 'ryczałt' ? 'selected' : '' }}>Ryczałt (8.5%)</option>
-                </select>
-            </div>
+        <div class="form-group">
+            <label for="tax_type">Typ opodatkowania</label>
+            <select
+                class="form-control @error('tax_type') is-invalid @enderror"
+                id="tax_type"
+                name="tax_type"
+                required
+            >
+                <option value="scale" {{ old('tax_type') == 'scale' ? 'selected' : '' }}>Skala podatkowa (17%/32%)</option>
+                <option value="flat"  {{ old('tax_type') == 'flat'  ? 'selected' : '' }}>Podatek liniowy (19%)</option>
+                <option value="ryczałt" {{ old('tax_type') == 'ryczałt' ? 'selected' : '' }}>Ryczałt (8.5%)</option>
+            </select>
+            @error('tax_type')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
 
-            <div class="form-group">
-                <label for="children">Liczba dzieci</label>
-                <input type="number" class="form-control" id="children" name="children" value="{{ old('children') }}">
-            </div>
+        <div class="form-group">
+            <label for="children">Liczba dzieci</label>
+            <input
+                type="number"
+                class="form-control @error('children') is-invalid @enderror"
+                id="children"
+                name="children"
+                value="{{ old('children') }}"
+                min="0"
+            >
+            @error('children')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
 
-            <div class="form-group">
-                <label for="social_insurance">Składki społeczne</label>
-                <input type="number" class="form-control" id="social_insurance" name="social_insurance"
-                    value="{{ old('social_insurance') }}">
-            </div>
+        <div class="form-group">
+            <label for="social_insurance">Składki społeczne</label>
+            <input
+                type="number"
+                class="form-control @error('social_insurance') is-invalid @enderror"
+                id="social_insurance"
+                name="social_insurance"
+                value="{{ old('social_insurance') }}"
+                min="0"
+            >
+            @error('social_insurance')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
 
-            <div class="form-group">
-                <label for="health_insurance">Składki zdrowotne</label>
-                <input type="number" class="form-control" id="health_insurance" name="health_insurance"
-                    value="{{ old('health_insurance') }}">
-            </div>
+        <div class="form-group">
+            <label for="health_insurance">Składki zdrowotne</label>
+            <input
+                type="number"
+                class="form-control @error('health_insurance') is-invalid @enderror"
+                id="health_insurance"
+                name="health_insurance"
+                value="{{ old('health_insurance') }}"
+                min="0"
+            >
+            @error('health_insurance')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
 
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="is_married" name="is_married"
-                    {{ old('is_married') ? 'checked' : '' }}>
-                <label class="form-check-label" for="is_married">Wspólne rozliczenie małżeńskie</label>
-            </div>
+        <div class="form-check">
+            <input
+                type="checkbox"
+                class="form-check-input @error('is_married') is-invalid @enderror"
+                id="is_married"
+                name="is_married"
+                {{ old('is_married') ? 'checked' : '' }}
+            >
+            <label class="form-check-label" for="is_married">Wspólne rozliczenie małżeńskie</label>
+            @error('is_married')
+                <div class="text-danger">{{ $message }}</div>
+            @enderror
+        </div>
 
-            <button type="submit" class="btn btn-primary mt-3">Oblicz PIT</button>
-        </form>
+        <button type="submit" class="btn btn-primary mt-3">Oblicz PIT</button>
+    </form>
 
         <!-- Wyświetlanie wyników obliczeń -->
         @if (session('taxableIncome') !== null && session('taxAmount') !== null)

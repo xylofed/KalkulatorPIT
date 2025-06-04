@@ -45,6 +45,25 @@
         box-shadow: 0 0 10px rgba(255, 221, 89, 0.4);
     }
 
+    /* Safari/Firefox fallback for dropdown text: */
+    .form-select {
+        -webkit-text-fill-color: #f0f4ff; /* for Safari */
+    }
+
+    /* Opcje w rozwijanej liście */
+    .form-select option {
+        background-color: rgba(38, 55, 112, 0.95);
+        color: #f0f4ff;
+    }
+    .form-select option:checked {
+        background-color: #2575fc;
+        color: #f0f4ff;
+    }
+    .form-select option:hover {
+        background-color: #2575fc;
+        color: #f0f4ff;
+    }
+
     .btn-primary {
         background-color: #ffdd59;
         border: none;
@@ -93,30 +112,69 @@
 
         <div class="mb-3">
             <label for="name" class="form-label">Imię i nazwisko</label>
-            <input type="text" name="name" class="form-control" value="{{ old('name', $user->name) }}" required>
+            <input
+                type="text"
+                name="name"
+                class="form-control @error('name') is-invalid @enderror"
+                value="{{ old('name', $user->name) }}"
+                required
+            >
+            @error('name')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
         <div class="mb-3">
             <label for="email" class="form-label">Adres e-mail</label>
-            <input type="email" name="email" class="form-control" value="{{ old('email', $user->email) }}" required>
+            <input
+                type="email"
+                name="email"
+                class="form-control @error('email') is-invalid @enderror"
+                value="{{ old('email', $user->email) }}"
+                required
+            >
+            @error('email')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
         <div class="mb-3">
             <label for="role" class="form-label">Rola</label>
-            <select name="role" class="form-select" required>
+            <select
+                name="role"
+                class="form-select @error('role') is-invalid @enderror"
+                required
+            >
                 <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>Użytkownik</option>
                 <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Administrator</option>
             </select>
+            @error('role')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
         <div class="mb-3">
             <label for="password" class="form-label">Hasło (pozostaw puste, aby nie zmieniać)</label>
-            <input type="password" name="password" class="form-control">
+            <input
+                type="password"
+                name="password"
+                class="form-control @error('password') is-invalid @enderror"
+            >
+            @error('password')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
         <div class="mb-3">
             <label for="password_confirmation" class="form-label">Potwierdź hasło</label>
-            <input type="password" name="password_confirmation" class="form-control">
+            <input
+                type="password"
+                name="password_confirmation"
+                class="form-control @error('password_confirmation') is-invalid @enderror"
+            >
+            @error('password_confirmation')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
         <button type="submit" class="btn btn-primary">Zapisz zmiany</button>

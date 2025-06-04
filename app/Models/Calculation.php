@@ -10,9 +10,7 @@ class Calculation extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function incomeSource() {
-        return $this->belongsTo(IncomeSource::class);
-    }
+
 
 
 }
